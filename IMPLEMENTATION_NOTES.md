@@ -33,446 +33,430 @@ CONTENT_START
     AddOutputFilterByType DEFLATE application/rss+xml
     AddOutputFilterByType DEFLATE application/javascript
     AddOutputFilterByType DEFLATE application/x-javascript
+    AddOutputFilterByType DEFLATE application/json
+    AddOutputFilterByType DEFLATE image/svg+xml
 </IfModule>
 
-# Enable browser caching
+# Enable Gzip compression
+<IfModule mod_gzip.c>
+    mod_gzip_on Yes
+    mod_gzip_dechunk Yes
+    mod_gzip_item_include file .(html?|txt|css|js|php|pl)$
+    mod_gzip_item_include handler ^cgi-script$
+    mod_gzip_item_include mime ^text/.*
+    mod_gzip_item_include mime ^application/x-javascript.*
+    mod_gzip_item_exclude mime ^image/.*
+    mod_gzip_item_exclude rspheader ^Content-Encoding:.*gzip.*
+</IfModule>
+
+# Browser Caching
 <IfModule mod_expires.c>
     ExpiresActive on
     
+    # HTML
+    ExpiresByType text/html                     "access plus 1 hour"
+    
     # CSS and JavaScript
-    ExpiresByType text/css "access plus 1 month"
-    ExpiresByType application/javascript "access plus 1 month"
-    ExpiresByType application/x-javascript "access plus 1 month"
+    ExpiresByType text/css                      "access plus 1 month"
+    ExpiresByType application/javascript        "access plus 1 month"
+    ExpiresByType application/x-javascript      "access plus 1 month"
     
     # Images
-    ExpiresByType image/png "access plus 1 year"
-    ExpiresByType image/jpg "access plus 1 year"
-    ExpiresByType image/jpeg "access plus 1 year"
-    ExpiresByType image/gif "access plus 1 year"
-    ExpiresByType image/svg+xml "access plus 1 year"
-    ExpiresByType image/webp "access plus 1 year"
-    
-    # HTML
-    ExpiresByType text/html "access plus 1 hour"
+    ExpiresByType image/gif                     "access plus 1 year"
+    ExpiresByType image/png                     "access plus 1 year"
+    ExpiresByType image/jpeg                    "access plus 1 year"
+    ExpiresByType image/jpg                     "access plus 1 year"
+    ExpiresByType image/webp                    "access plus 1 year"
+    ExpiresByType image/svg+xml                 "access plus 1 year"
     
     # Fonts
-    ExpiresByType font/woff "access plus 1 year"
-    ExpiresByType font/woff2 "access plus 1 year"
-    ExpiresByType application/font-woff "access plus 1 year"
-    ExpiresByType application/font-woff2 "access plus 1 year"
+    ExpiresByType font/woff2                    "access plus 1 year"
+    ExpiresByType font/woff                     "access plus 1 year"
+    ExpiresByType application/font-woff2        "access plus 1 year"
+    ExpiresByType application/font-woff         "access plus 1 year"
+    
+    # Favicon
+    ExpiresByType image/x-icon                  "access plus 1 year"
 </IfModule>
 
 # Cache-Control headers
 <IfModule mod_headers.c>
-    # CSS and JavaScript
+    # HTML files
+    <FilesMatch "\.(html|htm)$">
+        Header set Cache-Control "max-age=3600, public, must-revalidate"
+    </FilesMatch>
+    
+    # CSS and JS files
     <FilesMatch "\.(css|js)$">
-        Header set Cache-Control "public, max-age=2592000"
+        Header set Cache-Control "max-age=2592000, public"
     </FilesMatch>
     
     # Images
-    <FilesMatch "\.(png|jpg|jpeg|gif|svg|webp|ico)$">
-        Header set Cache-Control "public, max-age=31536000"
+    <FilesMatch "\.(gif|png|jpe?g|webp|svg)$">
+        Header set Cache-Control "max-age=31536000, public, immutable"
     </FilesMatch>
     
-    # HTML
-    <FilesMatch "\.html$">
-        Header set Cache-Control "public, max-age=3600"
-    </FilesMatch>
-    
-    # Security headers
-    Header always set X-Content-Type-Options nosniff
-    Header always set X-Frame-Options DENY
-    Header always set X-XSS-Protection "1; mode=block"
-    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+    # Remove ETag
+    Header unset ETag
 </IfModule>
 
-# Enable ETags
-FileETag MTime Size
+# Remove ETag
+FileETag None
 
-# Remove server signature
-ServerTokens Prod
+# Security headers
+<IfModule mod_headers.c>
+    Header always set X-Frame-Options "SAMEORIGIN"
+    Header always set X-Content-Type-Options "nosniff"
+    Header always set X-XSS-Protection "1; mode=block"
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+    Header always set Permissions-Policy "camera=(), microphone=(), geolocation=(), payment=()"
+</IfModule>
+
+# Enable HTTP/2 Server Push for critical resources
+<IfModule mod_http2.c>
+    H2PushResource /styles.css
+    H2PushResource /script.js
+</IfModule>
 CONTENT_END
 FILE: script.js
 CONTENT_START
 // Feature detection and polyfills
 (function() {
     'use strict';
+
+    // Performance optimization: Cache DOM elements
+    const DOM_CACHE = new Map();
     
-    // Check for modern browser features
-    const hasModernFeatures = {
-        intersectionObserver: 'IntersectionObserver' in window,
-        requestAnimationFrame: 'requestAnimationFrame' in window,
-        classList: 'classList' in document.documentElement,
-        addEventListener: 'addEventListener' in window,
-        querySelector: 'querySelector' in document,
+    function getElement(selector) {
+        if (!DOM_CACHE.has(selector)) {
+            DOM_CACHE.set(selector, document.querySelector(selector));
+        }
+        return DOM_CACHE.get(selector);
+    }
+
+    // Debounce function for performance
+    function debounce(func, wait, immediate) {
+        let timeout;
+        return function executedFunction() {
+            const context = this;
+            const args = arguments;
+            const later = function() {
+                timeout = null;
+                if (!immediate) func.apply(context, args);
+            };
+            const callNow = immediate && !timeout;
+            clearTimeout(timeout);
+            timeout = setTimeout(later, wait);
+            if (callNow) func.apply(context, args);
+        };
+    }
+
+    // Throttle function for scroll/resize events
+    function throttle(func, limit) {
+        let inThrottle;
+        return function() {
+            const args = arguments;
+            const context = this;
+            if (!inThrottle) {
+                func.apply(context, args);
+                inThrottle = true;
+                setTimeout(() => inThrottle = false, limit);
+            }
+        };
+    }
+
+    // Feature detection
+    const FEATURES = {
+        addEventListener: !!(window.addEventListener),
+        querySelector: !!(document.querySelector),
+        classList: !!('classList' in document.createElement('div')),
+        requestAnimationFrame: !!(window.requestAnimationFrame || 
+                                window.webkitRequestAnimationFrame || 
+                                window.mozRequestAnimationFrame),
         localStorage: (function() {
             try {
-                localStorage.setItem('test', 'test');
-                localStorage.removeItem('test');
-                return true;
+                return 'localStorage' in window && window.localStorage !== null;
             } catch(e) {
                 return false;
             }
+        })(),
+        intersectionObserver: !!(window.IntersectionObserver),
+        webGL: (function() {
+            try {
+                const canvas = document.createElement('canvas');
+                return !!(window.WebGLRenderingContext && 
+                         canvas.getContext('webgl'));
+            } catch(e) {
+                return false;
+            }
+        })(),
+        touchEvents: !!('ontouchstart' in window || 
+                       (window.DocumentTouch && document instanceof DocumentTouch)),
+        passiveEvents: (function() {
+            let supportsPassive = false;
+            try {
+                const opts = Object.defineProperty({}, 'passive', {
+                    get: function() {
+                        supportsPassive = true;
+                    }
+                });
+                window.addEventListener('testPassive', null, opts);
+                window.removeEventListener('testPassive', null, opts);
+            } catch (e) {}
+            return supportsPassive;
         })()
     };
-    
-    // Polyfill for classList (IE9 support)
-    if (!hasModernFeatures.classList) {
-        /*! @source http://purl.eligrey.com/github/classList.js/blob/master/classList.js */
-        if ("document" in self) {
-            if (!("classList" in document.createElement("_"))) {
-                (function (view) {
-                    "use strict";
-                    if (!('Element' in view)) return;
-                    var classListProp = "classList",
-                        protoProp = "prototype",
-                        elemCtrProto = view.Element[protoProp],
-                        objCtr = Object,
-                        strTrim = String[protoProp].trim || function () {
-                            return this.replace(/^\s+|\s+$/g, "");
-                        },
-                        arrIndexOf = Array[protoProp].indexOf || function (item) {
-                            var i = 0, len = this.length;
-                            for (; i < len; i++) {
-                                if (i in this && this[i] === item) {
-                                    return i;
-                                }
-                            }
-                            return -1;
-                        },
-                        DOMTokenList = function (el) {
-                            this.el = el;
-                            var classes = el.className.replace(/^\s+|\s+$/g, "").split(/\s+/);
-                            for (var i = 0, len = classes.length; i < len; i++) {
-                                this.push(classes[i]);
-                            }
-                            this._updateClassName = function () {
-                                el.className = this.toString();
-                            };
-                        },
-                        tokenListProto = DOMTokenList[protoProp] = [],
-                        tokenListGetter = function () {
-                            return new DOMTokenList(this);
-                        };
-                    tokenListProto.item = function (i) {
-                        return this[i] || null;
-                    };
-                    tokenListProto.contains = function (token) {
-                        token += "";
-                        return arrIndexOf.call(this, token) !== -1;
-                    };
-                    tokenListProto.add = function () {
-                        var tokens = arguments,
-                            i = 0,
-                            l = tokens.length,
-                            token,
-                            updated = false;
-                        do {
-                            token = tokens[i] + "";
-                            if (arrIndexOf.call(this, token) === -1) {
-                                this.push(token);
-                                updated = true;
-                            }
-                        }
-                        while (++i < l);
-                        if (updated) {
-                            this._updateClassName();
-                        }
-                    };
-                    tokenListProto.remove = function () {
-                        var tokens = arguments,
-                            i = 0,
-                            l = tokens.length,
-                            token,
-                            updated = false,
-                            index;
-                        do {
-                            token = tokens[i] + "";
-                            index = arrIndexOf.call(this, token);
-                            while (index !== -1) {
-                                this.splice(index, 1);
-                                updated = true;
-                                index = arrIndexOf.call(this, token);
-                            }
-                        }
-                        while (++i < l);
-                        if (updated) {
-                            this._updateClassName();
-                        }
-                    };
-                    tokenListProto.toggle = function (token, force) {
-                        token += "";
-                        var result = this.contains(token),
-                            method = result ?
-                            force !== true && "remove" :
-                            force !== false && "add";
-                        if (method) {
-                            this[method](token);
-                        }
-                        if (force === true || force === false) {
-                            return force;
-                        } else {
-                            return !result;
-                        }
-                    };
-                    tokenListProto.toString = function () {
-                        return this.join(" ");
-                    };
-                    if (objCtr.defineProperty) {
-                        var defineProperty = function (object, name, definition) {
-                            if (definition.get || definition.set) {
-                                objCtr.defineProperty(object, name, definition);
-                            } else {
-                                object[name] = definition.value;
-                            }
-                        };
-                        try {
-                            defineProperty(elemCtrProto, classListProp, {
-                                get: tokenListGetter,
-                                enumerable: true,
-                                configurable: true
-                            });
-                        } catch (ex) {
-                            if (ex.number === -0x7FF5EC54) {
-                                defineProperty(elemCtrProto, classListProp, {
-                                    value: tokenListGetter,
-                                    enumerable: true,
-                                    configurable: true
-                                });
-                            }
-                        }
-                    } else if (objCtr[protoProp].__defineGetter__) {
-                        elemCtrProto.__defineGetter__(classListProp, tokenListGetter);
+
+    // Cross-browser event handling
+    function addEvent(element, event, handler, options) {
+        if (FEATURES.addEventListener) {
+            const eventOptions = FEATURES.passiveEvents && 
+                               (event === 'scroll' || event === 'wheel' || 
+                                event === 'touchstart' || event === 'touchmove') 
+                               ? { passive: true, ...options } : options;
+            element.addEventListener(event, handler, eventOptions);
+        } else if (element.attachEvent) {
+            element.attachEvent('on' + event, handler);
+        } else {
+            element['on' + event] = handler;
+        }
+    }
+
+    // Cross-browser class manipulation
+    function addClass(element, className) {
+        if (FEATURES.classList) {
+            element.classList.add(className);
+        } else {
+            if (element.className.indexOf(className) === -1) {
+                element.className += ' ' + className;
+            }
+        }
+    }
+
+    function removeClass(element, className) {
+        if (FEATURES.classList) {
+            element.classList.remove(className);
+        } else {
+            element.className = element.className.replace(
+                new RegExp('\\b' + className + '\\b', 'g'), ''
+            ).replace(/\s+/g, ' ').trim();
+        }
+    }
+
+    function hasClass(element, className) {
+        if (FEATURES.classList) {
+            return element.classList.contains(className);
+        } else {
+            return element.className.indexOf(className) !== -1;
+        }
+    }
+
+    // Performance-optimized animation frame
+    const requestAnimFrame = (function() {
+        return window.requestAnimationFrame ||
+               window.webkitRequestAnimationFrame ||
+               window.mozRequestAnimationFrame ||
+               function(callback) {
+                   window.setTimeout(callback, 1000 / 60);
+               };
+    })();
+
+    // Lazy loading with Intersection Observer fallback
+    function initLazyLoading() {
+        const images = document.querySelectorAll('img[data-src]');
+        
+        if (FEATURES.intersectionObserver) {
+            const imageObserver = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const img = entry.target;
+                        img.src = img.dataset.src;
+                        img.removeAttribute('data-src');
+                        addClass(img, 'loaded');
+                        observer.unobserve(img);
                     }
-                }(self));
-            }
-        }
-    }
-    
-    // Polyfill for requestAnimationFrame
-    if (!hasModernFeatures.requestAnimationFrame) {
-        window.requestAnimationFrame = window.requestAnimationFrame ||
-            window.webkitRequestAnimationFrame ||
-            window.mozRequestAnimationFrame ||
-            function(callback) {
-                return window.setTimeout(callback, 1000 / 60);
-            };
-        
-        window.cancelAnimationFrame = window.cancelAnimationFrame ||
-            window.webkitCancelAnimationFrame ||
-            window.mozCancelAnimationFrame ||
-            function(id) {
-                window.clearTimeout(id);
-            };
-    }
-    
-    // Optimized DOM utilities
-    const DOMUtils = {
-        // Cached selectors for better performance
-        cache: new Map(),
-        
-        // Efficient element selection with caching
-        select(selector, context = document, useCache = true) {
-            const key = selector + (context === document ? '' : context.outerHTML);
-            if (useCache && this.cache.has(key)) {
-                return this.cache.get(key);
-            }
-            const element = context.querySelector(selector);
-            if (useCache && element) {
-                this.cache.set(key, element);
-            }
-            return element;
-        },
-        
-        selectAll(selector, context = document) {
-            return Array.from(context.querySelectorAll(selector));
-        },
-        
-        // Efficient class manipulation
-        addClass(element, className) {
-            if (element && className) {
-                element.classList.add(className);
-            }
-        },
-        
-        removeClass(element, className) {
-            if (element && className) {
-                element.classList.remove(className);
-            }
-        },
-        
-        toggleClass(element, className) {
-            if (element && className) {
-                element.classList.toggle(className);
-            }
-        },
-        
-        hasClass(element, className) {
-            return element && element.classList.contains(className);
-        }
-    };
-    
-    // Optimized event handling
-    const EventManager = {
-        listeners: new WeakMap(),
-        
-        // Efficient event delegation
-        delegate(parent, selector, eventType, handler) {
-            const delegatedHandler = (e) => {
-                const target = e.target.closest(selector);
-                if (target && parent.contains(target)) {
-                    handler.call(target, e);
-                }
-            };
-            
-            parent.addEventListener(eventType, delegatedHandler);
-            
-            if (!this.listeners.has(parent)) {
-                this.listeners.set(parent, []);
-            }
-            this.listeners.get(parent).push({
-                eventType,
-                handler: delegatedHandler,
-                originalHandler: handler
+                });
+            }, {
+                rootMargin: '50px 0px'
             });
-        },
-        
-        // Throttled event handler
-        throttle(func, limit) {
-            let inThrottle;
-            return function() {
-                const args = arguments;
-                const context = this;
-                if (!inThrottle) {
-                    func.apply(context, args);
-                    inThrottle = true;
-                    setTimeout(() => inThrottle = false, limit);
-                }
-            };
-        },
-        
-        // Debounced event handler
-        debounce(func, wait, immediate) {
-            let timeout;
-            return function() {
-                const context = this;
-                const args = arguments;
-                const later = function() {
-                    timeout = null;
-                    if (!immediate) func.apply(context, args);
-                };
-                const callNow = immediate && !timeout;
-                clearTimeout(timeout);
-                timeout = setTimeout(later, wait);
-                if (callNow) func.apply(context, args);
-            };
+
+            images.forEach(img => imageObserver.observe(img));
+        } else {
+            // Fallback for older browsers
+            function loadImagesInViewport() {
+                images.forEach(img => {
+                    if (img.dataset.src && isInViewport(img)) {
+                        img.src = img.dataset.src;
+                        img.removeAttribute('data-src');
+                        addClass(img, 'loaded');
+                    }
+                });
+            }
+
+            function isInViewport(element) {
+                const rect = element.getBoundingClientRect();
+                return (
+                    rect.top >= 0 &&
+                    rect.left >= 0 &&
+                    rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
+                    rect.right <= (window.innerWidth || document.documentElement.clientWidth)
+                );
+            }
+
+            const scrollHandler = throttle(loadImagesInViewport, 200);
+            addEvent(window, 'scroll', scrollHandler, { passive: true });
+            addEvent(window, 'resize', scrollHandler, { passive: true });
+            loadImagesInViewport(); // Check on load
         }
-    };
-    
+    }
+
     // Performance monitoring
-    const PerformanceMonitor = {
-        // Core Web Vitals measurement
-        measureCLS() {
-            if ('LayoutShift' in window) {
-                let clsValue = 0;
-                let clsEntries = [];
-                let sessionValue = 0;
-                let sessionEntries = [];
-                
-                const observer = new PerformanceObserver((entryList) => {
-                    for (const entry of entryList.getEntries()) {
-                        if (!entry.hadRecentInput) {
-                            const firstSessionEntry = sessionEntries[0];
-                            const lastSessionEntry = sessionEntries[sessionEntries.length - 1];
-                            
-                            if (sessionValue && entry.startTime - lastSessionEntry.startTime < 1000 && 
-                                entry.startTime - firstSessionEntry.startTime < 5000) {
-                                sessionValue += entry.value;
-                                sessionEntries.push(entry);
-                            } else {
-                                sessionValue = entry.value;
-                                sessionEntries = [entry];
-                            }
-                            
-                            if (sessionValue > clsValue) {
-                                clsValue = sessionValue;
-                                clsEntries = [...sessionEntries];
-                            }
+    function measurePerformance() {
+        if ('performance' in window) {
+            addEvent(window, 'load', function() {
+                setTimeout(() => {
+                    const perfData = performance.timing;
+                    const loadTime = perfData.loadEventEnd - perfData.navigationStart;
+                    const domReady = perfData.domContentLoadedEventEnd - perfData.navigationStart;
+                    
+                    // Log performance metrics (in production, send to analytics)
+                    console.log('Page Load Time:', loadTime + 'ms');
+                    console.log('DOM Ready Time:', domReady + 'ms');
+
+                    // Measure Core Web Vitals if available
+                    if ('PerformanceObserver' in window) {
+                        try {
+                            new PerformanceObserver((list) => {
+                                const entries = list.getEntries();
+                                entries.forEach(entry => {
+                                    if (entry.entryType === 'largest-contentful-paint') {
+                                        console.log('LCP:', entry.startTime);
+                                    }
+                                    if (entry.entryType === 'first-input') {
+                                        console.log('FID:', entry.processingStart - entry.startTime);
+                                    }
+                                    if (entry.entryType === 'layout-shift') {
+                                        if (!entry.hadRecentInput) {
+                                            console.log('CLS:', entry.value);
+                                        }
+                                    }
+                                });
+                            }).observe({
+                                entryTypes: ['largest-contentful-paint', 'first-input', 'layout-shift']
+                            });
+                        } catch (e) {
+                            console.warn('Performance Observer not supported');
                         }
                     }
-                });
-                
-                try {
-                    observer.observe({type: 'layout-shift', buffered: true});
-                } catch (e) {
-                    console.warn('LayoutShift observer not supported');
-                }
-                
-                return clsValue;
-            }
-        },
-        
-        measureLCP() {
-            if ('LargestContentfulPaint' in window) {
-                const observer = new PerformanceObserver((entryList) => {
-                    const entries = entryList.getEntries();
-                    const lastEntry = entries[entries.length - 1];
-                    console.log('LCP:', lastEntry.startTime);
-                });
-                
-                try {
-                    observer.observe({type: 'largest-contentful-paint', buffered: true});
-                } catch (e) {
-                    console.warn('LCP observer not supported');
-                }
-            }
-        },
-        
-        measureFID() {
-            if ('PerformanceEventTiming' in window) {
-                const observer = new PerformanceObserver((entryList) => {
-                    for (const entry of entryList.getEntries()) {
-                        const delay = entry.processingStart - entry.startTime;
-                        console.log('FID:', delay);
-                    }
-                });
-                
-                try {
-                    observer.observe({type: 'first-input', buffered: true});
-                } catch (e) {
-                    console.warn('FID observer not supported');
-                }
-            }
+                }, 0);
+            });
         }
-    };
-    
-    // Intersection Observer for efficient scroll animations
-    const ScrollAnimations = {
-        observer: null,
+    }
+
+    // Enhanced error handling and logging
+    function setupErrorHandling() {
+        window.onerror = function(message, source, lineno, colno, error) {
+            console.error('JavaScript Error:', {
+                message: message,
+                source: source,
+                line: lineno,
+                column: colno,
+                error: error
+            });
+            return false; // Don't prevent default browser error handling
+        };
+
+        // Handle Promise rejections
+        if ('addEventListener' in window) {
+            addEvent(window, 'unhandledrejection', function(event) {
+                console.error('Unhandled Promise Rejection:', event.reason);
+            });
+        }
+    }
+
+    // Progressive Web App features
+    function initServiceWorker() {
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/sw.js')
+                .then(registration => {
+                    console.log('SW registered: ', registration);
+                })
+                .catch(registrationError => {
+                    console.log('SW registration failed: ', registrationError);
+                });
+        }
+    }
+
+    // Local storage with error handling
+    function safeStorage(key, value) {
+        if (!FEATURES.localStorage) return null;
         
-        init() {
-            if (hasModernFeatures.intersectionObserver) {
-                this.observer = new IntersectionObserver((entries) => {
-                    entries.forEach(entry => {
-                        if (entry.isIntersecting) {
-                            DOMUtils.addClass(entry.target, 'animate-in');
-                            this.observer.unobserve(entry.target);
-                        }
-                    });
-                }, {
-                    threshold: 0.1,
-                    rootMargin: '0px 0px -50px 0px'
-                });
-                
-                // Observe elements with data-animate attribute
-                DOMUtils.selectAll('[data-animate]').forEach(el => {
-                    this.observer.observe(el);
-                });
+        try {
+            if (value !== undefined) {
+                localStorage.setItem(key, JSON.stringify(value));
+                return value;
             } else {
-                // Fallback for browsers without Intersection Observer
-                this.fallbackScrollHandler();
+                const item = localStorage.getItem(key);
+                return item ? JSON.parse(item) : null;
             }
-        },
+        } catch (e) {
+            console.warn('Storage operation failed:', e);
+            return null;
+        }
+    }
+
+    // Optimized smooth scroll
+    function smoothScrollTo(element) {
+        if ('scrollBehavior' in document.documentElement.style) {
+            element.scrollIntoView({ behavior: 'smooth' });
+        } else {
+            // Polyfill for older browsers
+            const targetPosition = element.offsetTop;
+            const startPosition = window.pageYOffset;
+            const distance = targetPosition - startPosition;
+            const duration = 800;
+            let start = null;
+
+            function animation(currentTime) {
+                if (start === null) start = currentTime;
+                const timeElapsed = currentTime - start;
+                const run = ease(timeElapsed, startPosition, distance, duration);
+                window.scrollTo(0, run);
+                if (timeElapsed < duration) requestAnimFrame(animation);
+            }
+
+            function ease(t, b, c, d) {
+                t /= d / 2;
+                if (t < 1) return c / 2 * t * t + b;
+                t--;
+                return -c / 2 * (t * (t - 2) - 1) + b;
+            }
+
+            requestAnimFrame(animation);
+        }
+    }
+
+    // Initialize everything when DOM is ready
+    function init() {
+        // Check if DOM is already loaded
+        if (document.readyState === 'loading') {
+            addEvent(document, 'DOMContentLoaded', function() {
+                initializeApp();
+            });
+        } else {
+            initializeApp();
+        }
+    }
+
+    function initializeApp() {
+        console.log('Initializing application...');
+        console.log('Browser features detected:', FEATURES);
         
-        fallbackScrollHandler() {
-            const animateElements = D
+        // Initialize features based on browser support
+        initLazyLoading();
+        measurePerformance();
+        setupErrorHandling();
+        
+        // Only init service worker in production
+        if (location.protocol === 'https:' || location.hostname === 'localhost') {
+            init
