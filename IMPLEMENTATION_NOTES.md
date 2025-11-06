@@ -2,17 +2,16 @@
 
 Implement the following feature phase:
 
-Phase: Phase 8: Performance & Browser Compatibility
-Description: Optimize performance, ensure cross-browser compatibility, and add progressive enhancements
+Phase: Phase 5: Keyboard Support & Accessibility
+Description: Add full keyboard support and accessibility features for enhanced usability
 
 Technical Details:
-Optimize JavaScript performance with efficient event handling and minimal DOM manipulation. Add CSS vendor prefixes for maximum browser support. Implement feature detection and graceful degradation. Minimize and optimize code for faster loading. Add proper caching headers and optimize for Core Web Vitals.
+Implement keyboard event listeners for all calculator functions (numbers 0-9, operators +, -, *, /, Enter for equals, Escape/C for clear, Backspace for delete). Add proper ARIA labels, keyboard focus management, and screen reader support. Ensure proper tab navigation and visual focus indicators.
 
 Files to focus on: {
-  ".htaccess": "Caching headers and performance optimizations for web servers",
-  "script.js": "Optimized code with efficient algorithms and cross-browser compatibility",
-  "styles.css": "Browser-compatible CSS with vendor prefixes and performance optimizations",
-  "manifest.json": "Web app manifest for PWA capabilities"
+  "script.js": "Enhanced with comprehensive keyboard event handling and accessibility features",
+  "index.html": "Updated with ARIA labels and accessibility attributes",
+  "styles.css": "Added focus styles and accessibility improvements"
 }
 
 Generate working, production-ready code for this phase. Make sure the implementation is complete and functional.
@@ -20,443 +19,510 @@ Generate working, production-ready code for this phase. Make sure the implementa
 ## Claude Response
 
 FILES_START
-FILE: .htaccess
+FILE: index.html
 CONTENT_START
-# Enable compression
-<IfModule mod_deflate.c>
-    AddOutputFilterByType DEFLATE text/plain
-    AddOutputFilterByType DEFLATE text/html
-    AddOutputFilterByType DEFLATE text/xml
-    AddOutputFilterByType DEFLATE text/css
-    AddOutputFilterByType DEFLATE application/xml
-    AddOutputFilterByType DEFLATE application/xhtml+xml
-    AddOutputFilterByType DEFLATE application/rss+xml
-    AddOutputFilterByType DEFLATE application/javascript
-    AddOutputFilterByType DEFLATE application/x-javascript
-    AddOutputFilterByType DEFLATE application/json
-    AddOutputFilterByType DEFLATE image/svg+xml
-</IfModule>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculator</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="calculator" role="application" aria-label="Calculator">
+        <div class="display-container">
+            <div id="display" 
+                 class="display" 
+                 role="textbox" 
+                 aria-readonly="true" 
+                 aria-label="Calculator display"
+                 aria-live="polite"
+                 tabindex="0">0</div>
+        </div>
+        <div class="buttons" role="grid" aria-label="Calculator buttons">
+            <button class="btn clear" 
+                    data-key="clear" 
+                    aria-label="Clear all"
+                    data-keyboard="Escape,c,C">C</button>
+            <button class="btn operator" 
+                    data-key="/" 
+                    aria-label="Divide"
+                    data-keyboard="/">/</button>
+            <button class="btn operator" 
+                    data-key="*" 
+                    aria-label="Multiply"
+                    data-keyboard="*,x,X">×</button>
+            <button class="btn delete" 
+                    data-key="delete" 
+                    aria-label="Delete last digit"
+                    data-keyboard="Backspace">⌫</button>
+            
+            <button class="btn number" 
+                    data-key="7" 
+                    aria-label="Seven"
+                    data-keyboard="7">7</button>
+            <button class="btn number" 
+                    data-key="8" 
+                    aria-label="Eight"
+                    data-keyboard="8">8</button>
+            <button class="btn number" 
+                    data-key="9" 
+                    aria-label="Nine"
+                    data-keyboard="9">9</button>
+            <button class="btn operator" 
+                    data-key="-" 
+                    aria-label="Subtract"
+                    data-keyboard="-">-</button>
+            
+            <button class="btn number" 
+                    data-key="4" 
+                    aria-label="Four"
+                    data-keyboard="4">4</button>
+            <button class="btn number" 
+                    data-key="5" 
+                    aria-label="Five"
+                    data-keyboard="5">5</button>
+            <button class="btn number" 
+                    data-key="6" 
+                    aria-label="Six"
+                    data-keyboard="6">6</button>
+            <button class="btn operator" 
+                    data-key="+" 
+                    aria-label="Add"
+                    data-keyboard="+">+</button>
+            
+            <button class="btn number" 
+                    data-key="1" 
+                    aria-label="One"
+                    data-keyboard="1">1</button>
+            <button class="btn number" 
+                    data-key="2" 
+                    aria-label="Two"
+                    data-keyboard="2">2</button>
+            <button class="btn number" 
+                    data-key="3" 
+                    aria-label="Three"
+                    data-keyboard="3">3</button>
+            <button class="btn equals" 
+                    data-key="=" 
+                    aria-label="Equals"
+                    data-keyboard="Enter,="
+                    rowspan="2">=</button>
+            
+            <button class="btn number zero" 
+                    data-key="0" 
+                    aria-label="Zero"
+                    data-keyboard="0">0</button>
+            <button class="btn decimal" 
+                    data-key="." 
+                    aria-label="Decimal point"
+                    data-keyboard=".,">.</button>
+        </div>
+    </div>
+    
+    <!-- Screen reader only instructions -->
+    <div class="sr-only" role="region" aria-label="Calculator instructions">
+        <h2>Calculator Instructions</h2>
+        <p>Use number keys 0-9 to enter numbers. Use +, -, *, / for operations. Press Enter or = to calculate. Press Escape or C to clear. Press Backspace to delete last digit.</p>
+    </div>
+    
+    <script src="script.js"></script>
+</body>
+</html>
+CONTENT_END
+FILE: styles.css
+CONTENT_START
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
 
-# Enable Gzip compression
-<IfModule mod_gzip.c>
-    mod_gzip_on Yes
-    mod_gzip_dechunk Yes
-    mod_gzip_item_include file .(html?|txt|css|js|php|pl)$
-    mod_gzip_item_include handler ^cgi-script$
-    mod_gzip_item_include mime ^text/.*
-    mod_gzip_item_include mime ^application/x-javascript.*
-    mod_gzip_item_exclude mime ^image/.*
-    mod_gzip_item_exclude rspheader ^Content-Encoding:.*gzip.*
-</IfModule>
+body {
+    font-family: 'Arial', sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 20px;
+}
 
-# Browser Caching
-<IfModule mod_expires.c>
-    ExpiresActive on
-    
-    # HTML
-    ExpiresByType text/html                     "access plus 1 hour"
-    
-    # CSS and JavaScript
-    ExpiresByType text/css                      "access plus 1 month"
-    ExpiresByType application/javascript        "access plus 1 month"
-    ExpiresByType application/x-javascript      "access plus 1 month"
-    
-    # Images
-    ExpiresByType image/gif                     "access plus 1 year"
-    ExpiresByType image/png                     "access plus 1 year"
-    ExpiresByType image/jpeg                    "access plus 1 year"
-    ExpiresByType image/jpg                     "access plus 1 year"
-    ExpiresByType image/webp                    "access plus 1 year"
-    ExpiresByType image/svg+xml                 "access plus 1 year"
-    
-    # Fonts
-    ExpiresByType font/woff2                    "access plus 1 year"
-    ExpiresByType font/woff                     "access plus 1 year"
-    ExpiresByType application/font-woff2        "access plus 1 year"
-    ExpiresByType application/font-woff         "access plus 1 year"
-    
-    # Favicon
-    ExpiresByType image/x-icon                  "access plus 1 year"
-</IfModule>
+.calculator {
+    background: #2c3e50;
+    border-radius: 20px;
+    padding: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    max-width: 300px;
+    width: 100%;
+}
 
-# Cache-Control headers
-<IfModule mod_headers.c>
-    # HTML files
-    <FilesMatch "\.(html|htm)$">
-        Header set Cache-Control "max-age=3600, public, must-revalidate"
-    </FilesMatch>
-    
-    # CSS and JS files
-    <FilesMatch "\.(css|js)$">
-        Header set Cache-Control "max-age=2592000, public"
-    </FilesMatch>
-    
-    # Images
-    <FilesMatch "\.(gif|png|jpe?g|webp|svg)$">
-        Header set Cache-Control "max-age=31536000, public, immutable"
-    </FilesMatch>
-    
-    # Remove ETag
-    Header unset ETag
-</IfModule>
+.display-container {
+    margin-bottom: 20px;
+}
 
-# Remove ETag
-FileETag None
+.display {
+    background: #34495e;
+    color: #ecf0f1;
+    font-size: 2.5rem;
+    text-align: right;
+    padding: 20px;
+    border-radius: 10px;
+    min-height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    border: 2px solid transparent;
+    position: relative;
+}
 
-# Security headers
-<IfModule mod_headers.c>
-    Header always set X-Frame-Options "SAMEORIGIN"
-    Header always set X-Content-Type-Options "nosniff"
-    Header always set X-XSS-Protection "1; mode=block"
-    Header always set Referrer-Policy "strict-origin-when-cross-origin"
-    Header always set Permissions-Policy "camera=(), microphone=(), geolocation=(), payment=()"
-</IfModule>
+.display:focus {
+    outline: none;
+    border-color: #3498db;
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.3);
+}
 
-# Enable HTTP/2 Server Push for critical resources
-<IfModule mod_http2.c>
-    H2PushResource /styles.css
-    H2PushResource /script.js
-</IfModule>
+.display::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    right: 15px;
+    transform: translateY(-50%);
+    width: 2px;
+    height: 24px;
+    background: #3498db;
+    animation: blink 1s infinite;
+    opacity: 0;
+}
+
+.display:focus::before {
+    opacity: 1;
+}
+
+@keyframes blink {
+    0%, 50% { opacity: 1; }
+    51%, 100% { opacity: 0; }
+}
+
+.buttons {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 15px;
+}
+
+.btn {
+    background: #3498db;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 1.5rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    min-height: 60px;
+    position: relative;
+    border: 2px solid transparent;
+}
+
+.btn:hover {
+    background: #2980b9;
+    transform: translateY(-2px);
+}
+
+.btn:active {
+    transform: translateY(0);
+}
+
+.btn:focus {
+    outline: none;
+    border-color: #ffffff;
+    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.4);
+}
+
+.btn:focus:not(:focus-visible) {
+    border-color: transparent;
+    box-shadow: none;
+}
+
+.btn:focus-visible {
+    border-color: #ffffff;
+    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.4);
+}
+
+.btn.operator {
+    background: #e67e22;
+}
+
+.btn.operator:hover {
+    background: #d35400;
+}
+
+.btn.equals {
+    background: #27ae60;
+    grid-row: span 2;
+}
+
+.btn.equals:hover {
+    background: #229954;
+}
+
+.btn.clear {
+    background: #e74c3c;
+}
+
+.btn.clear:hover {
+    background: #c0392b;
+}
+
+.btn.delete {
+    background: #9b59b6;
+}
+
+.btn.delete:hover {
+    background: #8e44ad;
+}
+
+.btn.zero {
+    grid-column: span 2;
+}
+
+.btn.number:hover {
+    background: #2980b9;
+}
+
+.btn.decimal {
+    background: #34495e;
+}
+
+.btn.decimal:hover {
+    background: #2c3e50;
+}
+
+/* Active state for keyboard interactions */
+.btn.active {
+    background: #1abc9c !important;
+    transform: scale(0.95);
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+    .calculator {
+        border: 3px solid #ffffff;
+    }
+    
+    .display {
+        border: 2px solid #ffffff;
+    }
+    
+    .btn {
+        border: 2px solid #ffffff;
+    }
+    
+    .btn:focus {
+        border-width: 4px;
+    }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+    .btn {
+        transition: none;
+    }
+    
+    .btn:hover {
+        transform: none;
+    }
+    
+    .btn:active {
+        transform: none;
+    }
+    
+    .display::before {
+        animation: none;
+    }
+}
+
+/* Screen reader only content */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+/* Mobile accessibility improvements */
+@media (max-width: 480px) {
+    .btn {
+        min-height: 70px;
+        font-size: 1.3rem;
+    }
+    
+    .display {
+        font-size: 2rem;
+        padding: 15px;
+    }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+    body {
+        background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+    }
+}
 CONTENT_END
 FILE: script.js
 CONTENT_START
-// Feature detection and polyfills
-(function() {
-    'use strict';
-
-    // Performance optimization: Cache DOM elements
-    const DOM_CACHE = new Map();
+class Calculator {
+    constructor() {
+        this.display = document.getElementById('display');
+        this.buttons = document.querySelectorAll('.btn');
+        this.currentInput = '0';
+        this.previousInput = '';
+        this.operator = '';
+        this.waitingForOperand = false;
+        this.lastKeyPressed = null;
+        
+        this.init();
+        this.setupKeyboardSupport();
+        this.setupAccessibilityFeatures();
+    }
     
-    function getElement(selector) {
-        if (!DOM_CACHE.has(selector)) {
-            DOM_CACHE.set(selector, document.querySelector(selector));
-        }
-        return DOM_CACHE.get(selector);
-    }
-
-    // Debounce function for performance
-    function debounce(func, wait, immediate) {
-        let timeout;
-        return function executedFunction() {
-            const context = this;
-            const args = arguments;
-            const later = function() {
-                timeout = null;
-                if (!immediate) func.apply(context, args);
-            };
-            const callNow = immediate && !timeout;
-            clearTimeout(timeout);
-            timeout = setTimeout(later, wait);
-            if (callNow) func.apply(context, args);
-        };
-    }
-
-    // Throttle function for scroll/resize events
-    function throttle(func, limit) {
-        let inThrottle;
-        return function() {
-            const args = arguments;
-            const context = this;
-            if (!inThrottle) {
-                func.apply(context, args);
-                inThrottle = true;
-                setTimeout(() => inThrottle = false, limit);
-            }
-        };
-    }
-
-    // Feature detection
-    const FEATURES = {
-        addEventListener: !!(window.addEventListener),
-        querySelector: !!(document.querySelector),
-        classList: !!('classList' in document.createElement('div')),
-        requestAnimationFrame: !!(window.requestAnimationFrame || 
-                                window.webkitRequestAnimationFrame || 
-                                window.mozRequestAnimationFrame),
-        localStorage: (function() {
-            try {
-                return 'localStorage' in window && window.localStorage !== null;
-            } catch(e) {
-                return false;
-            }
-        })(),
-        intersectionObserver: !!(window.IntersectionObserver),
-        webGL: (function() {
-            try {
-                const canvas = document.createElement('canvas');
-                return !!(window.WebGLRenderingContext && 
-                         canvas.getContext('webgl'));
-            } catch(e) {
-                return false;
-            }
-        })(),
-        touchEvents: !!('ontouchstart' in window || 
-                       (window.DocumentTouch && document instanceof DocumentTouch)),
-        passiveEvents: (function() {
-            let supportsPassive = false;
-            try {
-                const opts = Object.defineProperty({}, 'passive', {
-                    get: function() {
-                        supportsPassive = true;
-                    }
-                });
-                window.addEventListener('testPassive', null, opts);
-                window.removeEventListener('testPassive', null, opts);
-            } catch (e) {}
-            return supportsPassive;
-        })()
-    };
-
-    // Cross-browser event handling
-    function addEvent(element, event, handler, options) {
-        if (FEATURES.addEventListener) {
-            const eventOptions = FEATURES.passiveEvents && 
-                               (event === 'scroll' || event === 'wheel' || 
-                                event === 'touchstart' || event === 'touchmove') 
-                               ? { passive: true, ...options } : options;
-            element.addEventListener(event, handler, eventOptions);
-        } else if (element.attachEvent) {
-            element.attachEvent('on' + event, handler);
-        } else {
-            element['on' + event] = handler;
-        }
-    }
-
-    // Cross-browser class manipulation
-    function addClass(element, className) {
-        if (FEATURES.classList) {
-            element.classList.add(className);
-        } else {
-            if (element.className.indexOf(className) === -1) {
-                element.className += ' ' + className;
-            }
-        }
-    }
-
-    function removeClass(element, className) {
-        if (FEATURES.classList) {
-            element.classList.remove(className);
-        } else {
-            element.className = element.className.replace(
-                new RegExp('\\b' + className + '\\b', 'g'), ''
-            ).replace(/\s+/g, ' ').trim();
-        }
-    }
-
-    function hasClass(element, className) {
-        if (FEATURES.classList) {
-            return element.classList.contains(className);
-        } else {
-            return element.className.indexOf(className) !== -1;
-        }
-    }
-
-    // Performance-optimized animation frame
-    const requestAnimFrame = (function() {
-        return window.requestAnimationFrame ||
-               window.webkitRequestAnimationFrame ||
-               window.mozRequestAnimationFrame ||
-               function(callback) {
-                   window.setTimeout(callback, 1000 / 60);
-               };
-    })();
-
-    // Lazy loading with Intersection Observer fallback
-    function initLazyLoading() {
-        const images = document.querySelectorAll('img[data-src]');
+    init() {
+        this.buttons.forEach(button => {
+            button.addEventListener('click', (e) => {
+                this.handleButtonClick(e.target);
+                // Maintain focus for keyboard users
+                if (this.lastKeyPressed) {
+                    button.blur();
+                }
+            });
+        });
         
-        if (FEATURES.intersectionObserver) {
-            const imageObserver = new IntersectionObserver((entries, observer) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        const img = entry.target;
-                        img.src = img.dataset.src;
-                        img.removeAttribute('data-src');
-                        addClass(img, 'loaded');
-                        observer.unobserve(img);
-                    }
-                });
-            }, {
-                rootMargin: '50px 0px'
-            });
-
-            images.forEach(img => imageObserver.observe(img));
-        } else {
-            // Fallback for older browsers
-            function loadImagesInViewport() {
-                images.forEach(img => {
-                    if (img.dataset.src && isInViewport(img)) {
-                        img.src = img.dataset.src;
-                        img.removeAttribute('data-src');
-                        addClass(img, 'loaded');
-                    }
-                });
-            }
-
-            function isInViewport(element) {
-                const rect = element.getBoundingClientRect();
-                return (
-                    rect.top >= 0 &&
-                    rect.left >= 0 &&
-                    rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
-                    rect.right <= (window.innerWidth || document.documentElement.clientWidth)
-                );
-            }
-
-            const scrollHandler = throttle(loadImagesInViewport, 200);
-            addEvent(window, 'scroll', scrollHandler, { passive: true });
-            addEvent(window, 'resize', scrollHandler, { passive: true });
-            loadImagesInViewport(); // Check on load
-        }
+        // Make display focusable and announce changes
+        this.display.setAttribute('tabindex', '0');
+        this.updateDisplay();
     }
-
-    // Performance monitoring
-    function measurePerformance() {
-        if ('performance' in window) {
-            addEvent(window, 'load', function() {
-                setTimeout(() => {
-                    const perfData = performance.timing;
-                    const loadTime = perfData.loadEventEnd - perfData.navigationStart;
-                    const domReady = perfData.domContentLoadedEventEnd - perfData.navigationStart;
-                    
-                    // Log performance metrics (in production, send to analytics)
-                    console.log('Page Load Time:', loadTime + 'ms');
-                    console.log('DOM Ready Time:', domReady + 'ms');
-
-                    // Measure Core Web Vitals if available
-                    if ('PerformanceObserver' in window) {
-                        try {
-                            new PerformanceObserver((list) => {
-                                const entries = list.getEntries();
-                                entries.forEach(entry => {
-                                    if (entry.entryType === 'largest-contentful-paint') {
-                                        console.log('LCP:', entry.startTime);
-                                    }
-                                    if (entry.entryType === 'first-input') {
-                                        console.log('FID:', entry.processingStart - entry.startTime);
-                                    }
-                                    if (entry.entryType === 'layout-shift') {
-                                        if (!entry.hadRecentInput) {
-                                            console.log('CLS:', entry.value);
-                                        }
-                                    }
-                                });
-                            }).observe({
-                                entryTypes: ['largest-contentful-paint', 'first-input', 'layout-shift']
-                            });
-                        } catch (e) {
-                            console.warn('Performance Observer not supported');
-                        }
-                    }
-                }, 0);
-            });
-        }
-    }
-
-    // Enhanced error handling and logging
-    function setupErrorHandling() {
-        window.onerror = function(message, source, lineno, colno, error) {
-            console.error('JavaScript Error:', {
-                message: message,
-                source: source,
-                line: lineno,
-                column: colno,
-                error: error
-            });
-            return false; // Don't prevent default browser error handling
-        };
-
-        // Handle Promise rejections
-        if ('addEventListener' in window) {
-            addEvent(window, 'unhandledrejection', function(event) {
-                console.error('Unhandled Promise Rejection:', event.reason);
-            });
-        }
-    }
-
-    // Progressive Web App features
-    function initServiceWorker() {
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('/sw.js')
-                .then(registration => {
-                    console.log('SW registered: ', registration);
-                })
-                .catch(registrationError => {
-                    console.log('SW registration failed: ', registrationError);
-                });
-        }
-    }
-
-    // Local storage with error handling
-    function safeStorage(key, value) {
-        if (!FEATURES.localStorage) return null;
+    
+    setupKeyboardSupport() {
+        // Global keyboard event listener
+        document.addEventListener('keydown', (e) => {
+            this.handleKeydown(e);
+        });
         
-        try {
-            if (value !== undefined) {
-                localStorage.setItem(key, JSON.stringify(value));
-                return value;
-            } else {
-                const item = localStorage.getItem(key);
-                return item ? JSON.parse(item) : null;
-            }
-        } catch (e) {
-            console.warn('Storage operation failed:', e);
-            return null;
+        document.addEventListener('keyup', (e) => {
+            this.handleKeyup(e);
+        });
+        
+        // Create keyboard mapping
+        this.keyboardMap = new Map();
+        
+        // Numbers
+        for (let i = 0; i <= 9; i++) {
+            this.keyboardMap.set(i.toString(), i.toString());
+            this.keyboardMap.set(`Numpad${i}`, i.toString());
         }
+        
+        // Operators
+        this.keyboardMap.set('+', '+');
+        this.keyboardMap.set('NumpadAdd', '+');
+        this.keyboardMap.set('-', '-');
+        this.keyboardMap.set('NumpadSubtract', '-');
+        this.keyboardMap.set('*', '*');
+        this.keyboardMap.set('NumpadMultiply', '*');
+        this.keyboardMap.set('x', '*');
+        this.keyboardMap.set('X', '*');
+        this.keyboardMap.set('/', '/');
+        this.keyboardMap.set('NumpadDivide', '/');
+        
+        // Special keys
+        this.keyboardMap.set('Enter', '=');
+        this.keyboardMap.set('NumpadEnter', '=');
+        this.keyboardMap.set('=', '=');
+        this.keyboardMap.set('Escape', 'clear');
+        this.keyboardMap.set('c', 'clear');
+        this.keyboardMap.set('C', 'clear');
+        this.keyboardMap.set('Backspace', 'delete');
+        this.keyboardMap.set('Delete', 'delete');
+        this.keyboardMap.set('.', '.');
+        this.keyboardMap.set('NumpadDecimal', '.');
+        this.keyboardMap.set(',', '.');
     }
-
-    // Optimized smooth scroll
-    function smoothScrollTo(element) {
-        if ('scrollBehavior' in document.documentElement.style) {
-            element.scrollIntoView({ behavior: 'smooth' });
-        } else {
-            // Polyfill for older browsers
-            const targetPosition = element.offsetTop;
-            const startPosition = window.pageYOffset;
-            const distance = targetPosition - startPosition;
-            const duration = 800;
-            let start = null;
-
-            function animation(currentTime) {
-                if (start === null) start = currentTime;
-                const timeElapsed = currentTime - start;
-                const run = ease(timeElapsed, startPosition, distance, duration);
-                window.scrollTo(0, run);
-                if (timeElapsed < duration) requestAnimFrame(animation);
-            }
-
-            function ease(t, b, c, d) {
-                t /= d / 2;
-                if (t < 1) return c / 2 * t * t + b;
-                t--;
-                return -c / 2 * (t * (t - 2) - 1) + b;
-            }
-
-            requestAnimFrame(animation);
-        }
+    
+    setupAccessibilityFeatures() {
+        // Set up ARIA live region for announcements
+        this.display.setAttribute('aria-live', 'polite');
+        this.display.setAttribute('aria-atomic', 'true');
+        
+        // Focus management
+        this.setupFocusManagement();
+        
+        // Screen reader announcements
+        this.setupScreenReaderSupport();
     }
-
-    // Initialize everything when DOM is ready
-    function init() {
-        // Check if DOM is already loaded
-        if (document.readyState === 'loading') {
-            addEvent(document, 'DOMContentLoaded', function() {
-                initializeApp();
+    
+    setupFocusManagement() {
+        // Allow display to receive focus
+        this.display.addEventListener('keydown', (e) => {
+            // Allow navigation away from display with Tab
+            if (e.key === 'Tab') {
+                return;
+            }
+            // Handle other keys as if they were pressed globally
+            this.handleKeydown(e);
+        });
+        
+        // Manage button focus
+        this.buttons.forEach((button, index) => {
+            button.addEventListener('keydown', (e) => {
+                this.handleButtonNavigation(e, button, index);
             });
-        } else {
-            initializeApp();
-        }
+        });
     }
-
-    function initializeApp() {
-        console.log('Initializing application...');
-        console.log('Browser features detected:', FEATURES);
+    
+    setupScreenReaderSupport() {
+        // Create a live region for detailed announcements
+        this.announcementRegion = document.createElement('div');
+        this.announcementRegion.setAttribute('aria-live', 'assertive');
+        this.announcementRegion.setAttribute('aria-atomic', 'true');
+        this.announcementRegion.className = 'sr-only';
+        document.body.appendChild(this.announcementRegion);
+    }
+    
+    handleButtonNavigation(e, currentButton, currentIndex) {
+        const buttonsArray = Array.from(this.buttons);
+        let newIndex = currentIndex;
         
-        // Initialize features based on browser support
-        initLazyLoading();
-        measurePerformance();
-        setupErrorHandling();
+        switch (e.key) {
+            case 'ArrowRight':
+                newIndex = (currentIndex + 1) % buttonsArray.length;
+                break;
+            case 'ArrowLeft':
+                newIndex = (currentIndex - 1 + buttonsArray.length) % buttonsArray.length;
+                break;
+            case 'ArrowDown':
+                newIndex = Math.min(currentIndex + 4, buttonsArray.length - 1);
+                break;
+            case 'ArrowUp':
+                newIndex = Math.max(currentIndex - 4, 0);
+                break;
+            default:
+                return; // Don't prevent default for other keys
+        }
         
-        // Only init service worker in production
-        if (location.protocol === 'https:' || location.hostname === 'localhost') {
-            init
+        e.preventDefault();
+        buttonsArray[newIndex].focus();
+    }
+    
+    handleKeydown(e) {
+        this.lastKeyPressed = e.key;
+        
+        // Prevent default for calculator keys
+        if (
