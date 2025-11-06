@@ -2,16 +2,17 @@
 
 Implement the following feature phase:
 
-Phase: Phase 6: Advanced Features & Polish
-Description: Add advanced calculator features like backspace, memory functions, and enhanced error handling
+Phase: Phase 8: Performance & Browser Compatibility
+Description: Optimize performance, ensure cross-browser compatibility, and add progressive enhancements
 
 Technical Details:
-Implement backspace/delete functionality, add memory operations (MC, MR, M+, M-), implement calculation history, and add advanced error handling with user-friendly error messages. Include input validation and edge case management for robust operation.
+Optimize JavaScript performance with efficient event handling and minimal DOM manipulation. Add CSS vendor prefixes for maximum browser support. Implement feature detection and graceful degradation. Minimize and optimize code for faster loading. Add proper caching headers and optimize for Core Web Vitals.
 
 Files to focus on: {
-  "script.js": "Complete feature set with memory functions, backspace, history, and comprehensive error handling",
-  "index.html": "Additional buttons for memory and advanced functions",
-  "styles.css": "Styling for new features and error states"
+  ".htaccess": "Caching headers and performance optimizations for web servers",
+  "script.js": "Optimized code with efficient algorithms and cross-browser compatibility",
+  "styles.css": "Browser-compatible CSS with vendor prefixes and performance optimizations",
+  "manifest.json": "Web app manifest for PWA capabilities"
 }
 
 Generate working, production-ready code for this phase. Make sure the implementation is complete and functional.
@@ -19,446 +20,459 @@ Generate working, production-ready code for this phase. Make sure the implementa
 ## Claude Response
 
 FILES_START
-FILE: index.html
+FILE: .htaccess
 CONTENT_START
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Advanced Calculator</title>
-    <link rel="stylesheet" href="styles.css">
-</head>
-<body>
-    <div class="calculator-container">
-        <div class="calculator">
-            <!-- Display Section -->
-            <div class="display-section">
-                <div class="memory-indicator" id="memoryIndicator">M</div>
-                <div class="display" id="display">0</div>
-                <div class="expression" id="expression"></div>
-            </div>
-            
-            <!-- History Section -->
-            <div class="history-section" id="historySection">
-                <div class="history-header">
-                    <span>History</span>
-                    <button class="history-clear" id="historyClear">Clear</button>
-                </div>
-                <div class="history-list" id="historyList"></div>
-            </div>
-            
-            <!-- Error Message -->
-            <div class="error-message" id="errorMessage"></div>
-            
-            <!-- Memory Functions Row -->
-            <div class="button-row memory-row">
-                <button class="btn memory-btn" id="memoryClear">MC</button>
-                <button class="btn memory-btn" id="memoryRecall">MR</button>
-                <button class="btn memory-btn" id="memoryAdd">M+</button>
-                <button class="btn memory-btn" id="memorySubtract">M-</button>
-                <button class="btn memory-btn" id="memoryStore">MS</button>
-            </div>
-            
-            <!-- Function Row -->
-            <div class="button-row">
-                <button class="btn function-btn" id="clear">C</button>
-                <button class="btn function-btn" id="clearEntry">CE</button>
-                <button class="btn function-btn" id="backspace">⌫</button>
-                <button class="btn operator-btn" id="divide">÷</button>
-            </div>
-            
-            <!-- Number Rows -->
-            <div class="button-row">
-                <button class="btn number-btn" id="seven">7</button>
-                <button class="btn number-btn" id="eight">8</button>
-                <button class="btn number-btn" id="nine">9</button>
-                <button class="btn operator-btn" id="multiply">×</button>
-            </div>
-            
-            <div class="button-row">
-                <button class="btn number-btn" id="four">4</button>
-                <button class="btn number-btn" id="five">5</button>
-                <button class="btn number-btn" id="six">6</button>
-                <button class="btn operator-btn" id="subtract">-</button>
-            </div>
-            
-            <div class="button-row">
-                <button class="btn number-btn" id="one">1</button>
-                <button class="btn number-btn" id="two">2</button>
-                <button class="btn number-btn" id="three">3</button>
-                <button class="btn operator-btn" id="add">+</button>
-            </div>
-            
-            <div class="button-row">
-                <button class="btn function-btn" id="toggleSign">±</button>
-                <button class="btn number-btn" id="zero">0</button>
-                <button class="btn function-btn" id="decimal">.</button>
-                <button class="btn equals-btn" id="equals">=</button>
-            </div>
-            
-            <!-- Advanced Functions Row -->
-            <div class="button-row advanced-row">
-                <button class="btn advanced-btn" id="sqrt">√</button>
-                <button class="btn advanced-btn" id="square">x²</button>
-                <button class="btn advanced-btn" id="percent">%</button>
-                <button class="btn advanced-btn" id="reciprocal">1/x</button>
-            </div>
-            
-            <!-- History Toggle -->
-            <button class="history-toggle" id="historyToggle">History</button>
-        </div>
-    </div>
+# Enable compression
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/plain
+    AddOutputFilterByType DEFLATE text/html
+    AddOutputFilterByType DEFLATE text/xml
+    AddOutputFilterByType DEFLATE text/css
+    AddOutputFilterByType DEFLATE application/xml
+    AddOutputFilterByType DEFLATE application/xhtml+xml
+    AddOutputFilterByType DEFLATE application/rss+xml
+    AddOutputFilterByType DEFLATE application/javascript
+    AddOutputFilterByType DEFLATE application/x-javascript
+</IfModule>
+
+# Enable browser caching
+<IfModule mod_expires.c>
+    ExpiresActive on
     
-    <script src="script.js"></script>
-</body>
-</html>
+    # CSS and JavaScript
+    ExpiresByType text/css "access plus 1 month"
+    ExpiresByType application/javascript "access plus 1 month"
+    ExpiresByType application/x-javascript "access plus 1 month"
+    
+    # Images
+    ExpiresByType image/png "access plus 1 year"
+    ExpiresByType image/jpg "access plus 1 year"
+    ExpiresByType image/jpeg "access plus 1 year"
+    ExpiresByType image/gif "access plus 1 year"
+    ExpiresByType image/svg+xml "access plus 1 year"
+    ExpiresByType image/webp "access plus 1 year"
+    
+    # HTML
+    ExpiresByType text/html "access plus 1 hour"
+    
+    # Fonts
+    ExpiresByType font/woff "access plus 1 year"
+    ExpiresByType font/woff2 "access plus 1 year"
+    ExpiresByType application/font-woff "access plus 1 year"
+    ExpiresByType application/font-woff2 "access plus 1 year"
+</IfModule>
+
+# Cache-Control headers
+<IfModule mod_headers.c>
+    # CSS and JavaScript
+    <FilesMatch "\.(css|js)$">
+        Header set Cache-Control "public, max-age=2592000"
+    </FilesMatch>
+    
+    # Images
+    <FilesMatch "\.(png|jpg|jpeg|gif|svg|webp|ico)$">
+        Header set Cache-Control "public, max-age=31536000"
+    </FilesMatch>
+    
+    # HTML
+    <FilesMatch "\.html$">
+        Header set Cache-Control "public, max-age=3600"
+    </FilesMatch>
+    
+    # Security headers
+    Header always set X-Content-Type-Options nosniff
+    Header always set X-Frame-Options DENY
+    Header always set X-XSS-Protection "1; mode=block"
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+</IfModule>
+
+# Enable ETags
+FileETag MTime Size
+
+# Remove server signature
+ServerTokens Prod
 CONTENT_END
 FILE: script.js
 CONTENT_START
-class AdvancedCalculator {
-    constructor() {
-        this.display = document.getElementById('display');
-        this.expression = document.getElementById('expression');
-        this.errorMessage = document.getElementById('errorMessage');
-        this.memoryIndicator = document.getElementById('memoryIndicator');
-        this.historySection = document.getElementById('historySection');
-        this.historyList = document.getElementById('historyList');
-        this.historyToggle = document.getElementById('historyToggle');
-        
-        this.currentValue = '0';
-        this.previousValue = '';
-        this.operator = '';
-        this.waitingForOperand = false;
-        this.shouldResetDisplay = false;
-        this.memory = 0;
-        this.history = [];
-        this.isHistoryVisible = false;
-        
-        this.initializeEventListeners();
-        this.loadHistory();
-        this.updateMemoryIndicator();
-    }
+// Feature detection and polyfills
+(function() {
+    'use strict';
     
-    initializeEventListeners() {
-        // Number buttons
-        document.querySelectorAll('.number-btn').forEach(button => {
-            button.addEventListener('click', () => this.inputNumber(button.textContent));
-        });
-        
-        // Operator buttons
-        document.getElementById('add').addEventListener('click', () => this.inputOperator('+'));
-        document.getElementById('subtract').addEventListener('click', () => this.inputOperator('-'));
-        document.getElementById('multiply').addEventListener('click', () => this.inputOperator('×'));
-        document.getElementById('divide').addEventListener('click', () => this.inputOperator('÷'));
-        
-        // Function buttons
-        document.getElementById('equals').addEventListener('click', () => this.calculate());
-        document.getElementById('clear').addEventListener('click', () => this.clear());
-        document.getElementById('clearEntry').addEventListener('click', () => this.clearEntry());
-        document.getElementById('backspace').addEventListener('click', () => this.backspace());
-        document.getElementById('decimal').addEventListener('click', () => this.inputDecimal());
-        document.getElementById('toggleSign').addEventListener('click', () => this.toggleSign());
-        
-        // Advanced functions
-        document.getElementById('sqrt').addEventListener('click', () => this.sqrt());
-        document.getElementById('square').addEventListener('click', () => this.square());
-        document.getElementById('percent').addEventListener('click', () => this.percent());
-        document.getElementById('reciprocal').addEventListener('click', () => this.reciprocal());
-        
-        // Memory functions
-        document.getElementById('memoryClear').addEventListener('click', () => this.memoryClear());
-        document.getElementById('memoryRecall').addEventListener('click', () => this.memoryRecall());
-        document.getElementById('memoryAdd').addEventListener('click', () => this.memoryAdd());
-        document.getElementById('memorySubtract').addEventListener('click', () => this.memorySubtract());
-        document.getElementById('memoryStore').addEventListener('click', () => this.memoryStore());
-        
-        // History functions
-        document.getElementById('historyToggle').addEventListener('click', () => this.toggleHistory());
-        document.getElementById('historyClear').addEventListener('click', () => this.clearHistory());
-        
-        // Keyboard support
-        document.addEventListener('keydown', (e) => this.handleKeyboard(e));
-        
-        // Click outside to close error
-        document.addEventListener('click', (e) => {
-            if (!e.target.closest('.error-message')) {
-                this.hideError();
+    // Check for modern browser features
+    const hasModernFeatures = {
+        intersectionObserver: 'IntersectionObserver' in window,
+        requestAnimationFrame: 'requestAnimationFrame' in window,
+        classList: 'classList' in document.documentElement,
+        addEventListener: 'addEventListener' in window,
+        querySelector: 'querySelector' in document,
+        localStorage: (function() {
+            try {
+                localStorage.setItem('test', 'test');
+                localStorage.removeItem('test');
+                return true;
+            } catch(e) {
+                return false;
             }
-        });
-    }
+        })()
+    };
     
-    inputNumber(num) {
-        this.hideError();
-        
-        if (this.waitingForOperand || this.shouldResetDisplay) {
-            this.currentValue = num;
-            this.waitingForOperand = false;
-            this.shouldResetDisplay = false;
-        } else {
-            if (this.currentValue === '0') {
-                this.currentValue = num;
-            } else if (this.currentValue.length < 15) { // Limit input length
-                this.currentValue += num;
-            }
-        }
-        
-        this.updateDisplay();
-    }
-    
-    inputOperator(nextOperator) {
-        this.hideError();
-        const inputValue = parseFloat(this.currentValue);
-        
-        if (this.previousValue === '') {
-            this.previousValue = inputValue;
-        } else if (this.operator) {
-            const currentValue = this.previousValue || 0;
-            const newValue = this.performCalculation(currentValue, inputValue, this.operator);
-            
-            if (newValue === null) return; // Error occurred
-            
-            this.currentValue = String(newValue);
-            this.previousValue = newValue;
-        }
-        
-        this.waitingForOperand = true;
-        this.operator = nextOperator;
-        this.updateExpression();
-        this.updateDisplay();
-    }
-    
-    calculate() {
-        this.hideError();
-        const inputValue = parseFloat(this.currentValue);
-        
-        if (this.previousValue !== '' && this.operator) {
-            const currentValue = this.previousValue || 0;
-            const result = this.performCalculation(currentValue, inputValue, this.operator);
-            
-            if (result === null) return; // Error occurred
-            
-            const calculation = `${this.formatNumber(currentValue)} ${this.operator} ${this.formatNumber(inputValue)} = ${this.formatNumber(result)}`;
-            this.addToHistory(calculation);
-            
-            this.currentValue = String(result);
-            this.previousValue = '';
-            this.operator = '';
-            this.waitingForOperand = true;
-            this.shouldResetDisplay = true;
-        }
-        
-        this.updateDisplay();
-        this.updateExpression();
-    }
-    
-    performCalculation(firstOperand, secondOperand, operator) {
-        try {
-            let result;
-            
-            // Validate inputs
-            if (!this.isValidNumber(firstOperand) || !this.isValidNumber(secondOperand)) {
-                this.showError('Invalid input');
-                return null;
-            }
-            
-            switch (operator) {
-                case '+':
-                    result = firstOperand + secondOperand;
-                    break;
-                case '-':
-                    result = firstOperand - secondOperand;
-                    break;
-                case '×':
-                    result = firstOperand * secondOperand;
-                    break;
-                case '÷':
-                    if (secondOperand === 0) {
-                        this.showError('Cannot divide by zero');
-                        return null;
+    // Polyfill for classList (IE9 support)
+    if (!hasModernFeatures.classList) {
+        /*! @source http://purl.eligrey.com/github/classList.js/blob/master/classList.js */
+        if ("document" in self) {
+            if (!("classList" in document.createElement("_"))) {
+                (function (view) {
+                    "use strict";
+                    if (!('Element' in view)) return;
+                    var classListProp = "classList",
+                        protoProp = "prototype",
+                        elemCtrProto = view.Element[protoProp],
+                        objCtr = Object,
+                        strTrim = String[protoProp].trim || function () {
+                            return this.replace(/^\s+|\s+$/g, "");
+                        },
+                        arrIndexOf = Array[protoProp].indexOf || function (item) {
+                            var i = 0, len = this.length;
+                            for (; i < len; i++) {
+                                if (i in this && this[i] === item) {
+                                    return i;
+                                }
+                            }
+                            return -1;
+                        },
+                        DOMTokenList = function (el) {
+                            this.el = el;
+                            var classes = el.className.replace(/^\s+|\s+$/g, "").split(/\s+/);
+                            for (var i = 0, len = classes.length; i < len; i++) {
+                                this.push(classes[i]);
+                            }
+                            this._updateClassName = function () {
+                                el.className = this.toString();
+                            };
+                        },
+                        tokenListProto = DOMTokenList[protoProp] = [],
+                        tokenListGetter = function () {
+                            return new DOMTokenList(this);
+                        };
+                    tokenListProto.item = function (i) {
+                        return this[i] || null;
+                    };
+                    tokenListProto.contains = function (token) {
+                        token += "";
+                        return arrIndexOf.call(this, token) !== -1;
+                    };
+                    tokenListProto.add = function () {
+                        var tokens = arguments,
+                            i = 0,
+                            l = tokens.length,
+                            token,
+                            updated = false;
+                        do {
+                            token = tokens[i] + "";
+                            if (arrIndexOf.call(this, token) === -1) {
+                                this.push(token);
+                                updated = true;
+                            }
+                        }
+                        while (++i < l);
+                        if (updated) {
+                            this._updateClassName();
+                        }
+                    };
+                    tokenListProto.remove = function () {
+                        var tokens = arguments,
+                            i = 0,
+                            l = tokens.length,
+                            token,
+                            updated = false,
+                            index;
+                        do {
+                            token = tokens[i] + "";
+                            index = arrIndexOf.call(this, token);
+                            while (index !== -1) {
+                                this.splice(index, 1);
+                                updated = true;
+                                index = arrIndexOf.call(this, token);
+                            }
+                        }
+                        while (++i < l);
+                        if (updated) {
+                            this._updateClassName();
+                        }
+                    };
+                    tokenListProto.toggle = function (token, force) {
+                        token += "";
+                        var result = this.contains(token),
+                            method = result ?
+                            force !== true && "remove" :
+                            force !== false && "add";
+                        if (method) {
+                            this[method](token);
+                        }
+                        if (force === true || force === false) {
+                            return force;
+                        } else {
+                            return !result;
+                        }
+                    };
+                    tokenListProto.toString = function () {
+                        return this.join(" ");
+                    };
+                    if (objCtr.defineProperty) {
+                        var defineProperty = function (object, name, definition) {
+                            if (definition.get || definition.set) {
+                                objCtr.defineProperty(object, name, definition);
+                            } else {
+                                object[name] = definition.value;
+                            }
+                        };
+                        try {
+                            defineProperty(elemCtrProto, classListProp, {
+                                get: tokenListGetter,
+                                enumerable: true,
+                                configurable: true
+                            });
+                        } catch (ex) {
+                            if (ex.number === -0x7FF5EC54) {
+                                defineProperty(elemCtrProto, classListProp, {
+                                    value: tokenListGetter,
+                                    enumerable: true,
+                                    configurable: true
+                                });
+                            }
+                        }
+                    } else if (objCtr[protoProp].__defineGetter__) {
+                        elemCtrProto.__defineGetter__(classListProp, tokenListGetter);
                     }
-                    result = firstOperand / secondOperand;
-                    break;
-                default:
-                    this.showError('Invalid operator');
-                    return null;
+                }(self));
             }
-            
-            // Check for overflow or invalid result
-            if (!this.isValidResult(result)) {
-                this.showError('Result is too large or invalid');
-                return null;
+        }
+    }
+    
+    // Polyfill for requestAnimationFrame
+    if (!hasModernFeatures.requestAnimationFrame) {
+        window.requestAnimationFrame = window.requestAnimationFrame ||
+            window.webkitRequestAnimationFrame ||
+            window.mozRequestAnimationFrame ||
+            function(callback) {
+                return window.setTimeout(callback, 1000 / 60);
+            };
+        
+        window.cancelAnimationFrame = window.cancelAnimationFrame ||
+            window.webkitCancelAnimationFrame ||
+            window.mozCancelAnimationFrame ||
+            function(id) {
+                window.clearTimeout(id);
+            };
+    }
+    
+    // Optimized DOM utilities
+    const DOMUtils = {
+        // Cached selectors for better performance
+        cache: new Map(),
+        
+        // Efficient element selection with caching
+        select(selector, context = document, useCache = true) {
+            const key = selector + (context === document ? '' : context.outerHTML);
+            if (useCache && this.cache.has(key)) {
+                return this.cache.get(key);
             }
+            const element = context.querySelector(selector);
+            if (useCache && element) {
+                this.cache.set(key, element);
+            }
+            return element;
+        },
+        
+        selectAll(selector, context = document) {
+            return Array.from(context.querySelectorAll(selector));
+        },
+        
+        // Efficient class manipulation
+        addClass(element, className) {
+            if (element && className) {
+                element.classList.add(className);
+            }
+        },
+        
+        removeClass(element, className) {
+            if (element && className) {
+                element.classList.remove(className);
+            }
+        },
+        
+        toggleClass(element, className) {
+            if (element && className) {
+                element.classList.toggle(className);
+            }
+        },
+        
+        hasClass(element, className) {
+            return element && element.classList.contains(className);
+        }
+    };
+    
+    // Optimized event handling
+    const EventManager = {
+        listeners: new WeakMap(),
+        
+        // Efficient event delegation
+        delegate(parent, selector, eventType, handler) {
+            const delegatedHandler = (e) => {
+                const target = e.target.closest(selector);
+                if (target && parent.contains(target)) {
+                    handler.call(target, e);
+                }
+            };
             
-            // Round to prevent floating point errors
-            return Math.round(result * 1e10) / 1e10;
+            parent.addEventListener(eventType, delegatedHandler);
             
-        } catch (error) {
-            this.showError('Calculation error');
-            return null;
+            if (!this.listeners.has(parent)) {
+                this.listeners.set(parent, []);
+            }
+            this.listeners.get(parent).push({
+                eventType,
+                handler: delegatedHandler,
+                originalHandler: handler
+            });
+        },
+        
+        // Throttled event handler
+        throttle(func, limit) {
+            let inThrottle;
+            return function() {
+                const args = arguments;
+                const context = this;
+                if (!inThrottle) {
+                    func.apply(context, args);
+                    inThrottle = true;
+                    setTimeout(() => inThrottle = false, limit);
+                }
+            };
+        },
+        
+        // Debounced event handler
+        debounce(func, wait, immediate) {
+            let timeout;
+            return function() {
+                const context = this;
+                const args = arguments;
+                const later = function() {
+                    timeout = null;
+                    if (!immediate) func.apply(context, args);
+                };
+                const callNow = immediate && !timeout;
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+                if (callNow) func.apply(context, args);
+            };
         }
-    }
+    };
     
-    clear() {
-        this.currentValue = '0';
-        this.previousValue = '';
-        this.operator = '';
-        this.waitingForOperand = false;
-        this.shouldResetDisplay = false;
-        this.updateDisplay();
-        this.updateExpression();
-        this.hideError();
-    }
-    
-    clearEntry() {
-        this.currentValue = '0';
-        this.updateDisplay();
-        this.hideError();
-    }
-    
-    backspace() {
-        this.hideError();
+    // Performance monitoring
+    const PerformanceMonitor = {
+        // Core Web Vitals measurement
+        measureCLS() {
+            if ('LayoutShift' in window) {
+                let clsValue = 0;
+                let clsEntries = [];
+                let sessionValue = 0;
+                let sessionEntries = [];
+                
+                const observer = new PerformanceObserver((entryList) => {
+                    for (const entry of entryList.getEntries()) {
+                        if (!entry.hadRecentInput) {
+                            const firstSessionEntry = sessionEntries[0];
+                            const lastSessionEntry = sessionEntries[sessionEntries.length - 1];
+                            
+                            if (sessionValue && entry.startTime - lastSessionEntry.startTime < 1000 && 
+                                entry.startTime - firstSessionEntry.startTime < 5000) {
+                                sessionValue += entry.value;
+                                sessionEntries.push(entry);
+                            } else {
+                                sessionValue = entry.value;
+                                sessionEntries = [entry];
+                            }
+                            
+                            if (sessionValue > clsValue) {
+                                clsValue = sessionValue;
+                                clsEntries = [...sessionEntries];
+                            }
+                        }
+                    }
+                });
+                
+                try {
+                    observer.observe({type: 'layout-shift', buffered: true});
+                } catch (e) {
+                    console.warn('LayoutShift observer not supported');
+                }
+                
+                return clsValue;
+            }
+        },
         
-        if (this.shouldResetDisplay) {
-            this.clear();
-            return;
+        measureLCP() {
+            if ('LargestContentfulPaint' in window) {
+                const observer = new PerformanceObserver((entryList) => {
+                    const entries = entryList.getEntries();
+                    const lastEntry = entries[entries.length - 1];
+                    console.log('LCP:', lastEntry.startTime);
+                });
+                
+                try {
+                    observer.observe({type: 'largest-contentful-paint', buffered: true});
+                } catch (e) {
+                    console.warn('LCP observer not supported');
+                }
+            }
+        },
+        
+        measureFID() {
+            if ('PerformanceEventTiming' in window) {
+                const observer = new PerformanceObserver((entryList) => {
+                    for (const entry of entryList.getEntries()) {
+                        const delay = entry.processingStart - entry.startTime;
+                        console.log('FID:', delay);
+                    }
+                });
+                
+                try {
+                    observer.observe({type: 'first-input', buffered: true});
+                } catch (e) {
+                    console.warn('FID observer not supported');
+                }
+            }
         }
-        
-        if (this.currentValue.length > 1) {
-            this.currentValue = this.currentValue.slice(0, -1);
-        } else {
-            this.currentValue = '0';
-        }
-        
-        this.updateDisplay();
-    }
+    };
     
-    inputDecimal() {
-        this.hideError();
+    // Intersection Observer for efficient scroll animations
+    const ScrollAnimations = {
+        observer: null,
         
-        if (this.waitingForOperand || this.shouldResetDisplay) {
-            this.currentValue = '0.';
-            this.waitingForOperand = false;
-            this.shouldResetDisplay = false;
-        } else if (this.currentValue.indexOf('.') === -1) {
-            this.currentValue += '.';
-        }
-        
-        this.updateDisplay();
-    }
-    
-    toggleSign() {
-        this.hideError();
-        
-        if (this.currentValue !== '0') {
-            if (this.currentValue.charAt(0) === '-') {
-                this.currentValue = this.currentValue.slice(1);
+        init() {
+            if (hasModernFeatures.intersectionObserver) {
+                this.observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            DOMUtils.addClass(entry.target, 'animate-in');
+                            this.observer.unobserve(entry.target);
+                        }
+                    });
+                }, {
+                    threshold: 0.1,
+                    rootMargin: '0px 0px -50px 0px'
+                });
+                
+                // Observe elements with data-animate attribute
+                DOMUtils.selectAll('[data-animate]').forEach(el => {
+                    this.observer.observe(el);
+                });
             } else {
-                this.currentValue = '-' + this.currentValue;
+                // Fallback for browsers without Intersection Observer
+                this.fallbackScrollHandler();
             }
-        }
+        },
         
-        this.updateDisplay();
-    }
-    
-    // Advanced Functions
-    sqrt() {
-        const value = parseFloat(this.currentValue);
-        
-        if (value < 0) {
-            this.showError('Cannot calculate square root of negative number');
-            return;
-        }
-        
-        const result = Math.sqrt(value);
-        if (!this.isValidResult(result)) {
-            this.showError('Invalid result');
-            return;
-        }
-        
-        const calculation = `√${this.formatNumber(value)} = ${this.formatNumber(result)}`;
-        this.addToHistory(calculation);
-        
-        this.currentValue = String(result);
-        this.shouldResetDisplay = true;
-        this.updateDisplay();
-    }
-    
-    square() {
-        const value = parseFloat(this.currentValue);
-        const result = value * value;
-        
-        if (!this.isValidResult(result)) {
-            this.showError('Result is too large');
-            return;
-        }
-        
-        const calculation = `${this.formatNumber(value)}² = ${this.formatNumber(result)}`;
-        this.addToHistory(calculation);
-        
-        this.currentValue = String(result);
-        this.shouldResetDisplay = true;
-        this.updateDisplay();
-    }
-    
-    percent() {
-        const value = parseFloat(this.currentValue);
-        const result = value / 100;
-        
-        const calculation = `${this.formatNumber(value)}% = ${this.formatNumber(result)}`;
-        this.addToHistory(calculation);
-        
-        this.currentValue = String(result);
-        this.shouldResetDisplay = true;
-        this.updateDisplay();
-    }
-    
-    reciprocal() {
-        const value = parseFloat(this.currentValue);
-        
-        if (value === 0) {
-            this.showError('Cannot divide by zero');
-            return;
-        }
-        
-        const result = 1 / value;
-        if (!this.isValidResult(result)) {
-            this.showError('Invalid result');
-            return;
-        }
-        
-        const calculation = `1/${this.formatNumber(value)} = ${this.formatNumber(result)}`;
-        this.addToHistory(calculation);
-        
-        this.currentValue = String(result);
-        this.shouldResetDisplay = true;
-        this.updateDisplay();
-    }
-    
-    // Memory Functions
-    memoryClear() {
-        this.memory = 0;
-        this.updateMemoryIndicator();
-        this.hideError();
-    }
-    
-    memoryRecall() {
-        this.currentValue = String(this.memory);
-        this.shouldResetDisplay = true;
-        this.updateDisplay();
-        this.hideError();
-    }
-    
-    memoryAdd() {
-        const value = parseFloat(this.currentValue);
-        if (this.isValidNumber(value)) {
-            this.memory += value;
-            this.updateMemoryIndicator();
-            this.addToHistory(`M+ ${this.formatNumber(value)}`);
-        }
-        this.hideError();
-    }
-    
-    memorySubtract() {
-        const value = parseFloat(this.currentValue);
-        if (this.isValidNumber(value)) {
+        fallbackScrollHandler() {
+            const animateElements = D
