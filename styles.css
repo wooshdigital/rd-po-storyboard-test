@@ -1,4 +1,18 @@
-/* Reset and base styles */
+:root {
+    --primary-color: #2c3e50;
+    --secondary-color: #34495e;
+    --accent-color: #e74c3c;
+    --number-color: #ecf0f1;
+    --operator-color: #95a5a6;
+    --display-bg: #1a252f;
+    --text-light: #ffffff;
+    --text-dark: #2c3e50;
+    --shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    --shadow-hover: 0 12px 35px rgba(0, 0, 0, 0.2);
+    --border-radius: 12px;
+    --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
 * {
     margin: 0;
     padding: 0;
@@ -6,285 +20,349 @@
 }
 
 body {
-    font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     min-height: 100vh;
     display: flex;
-    align-items: center;
     justify-content: center;
+    align-items: center;
     padding: 20px;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
-/* Calculator container */
-.calculator {
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(20px);
-    border-radius: 24px;
-    padding: 24px;
-    box-shadow: 
-        0 8px 32px rgba(0, 0, 0, 0.1),
-        0 0 0 1px rgba(255, 255, 255, 0.1);
+.container {
     width: 100%;
-    max-width: 320px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    max-width: 400px;
+    margin: 0 auto;
 }
 
-/* Display screen */
+.calculator {
+    background: var(--primary-color);
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+    width: 100%;
+    transition: var(--transition);
+}
+
+.calculator:hover {
+    box-shadow: var(--shadow-hover);
+}
+
 .display {
-    margin-bottom: 20px;
-}
-
-.display-screen {
-    background: rgba(0, 0, 0, 0.8);
-    border-radius: 16px;
-    padding: 24px 20px;
+    background: var(--display-bg);
+    padding: 30px 25px;
     text-align: right;
+    color: var(--text-light);
+    position: relative;
     min-height: 120px;
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
-    box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.3);
-    border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .previous-operand {
-    color: rgba(255, 255, 255, 0.6);
-    font-size: 18px;
-    font-weight: 400;
-    margin-bottom: 8px;
-    min-height: 24px;
+    font-size: 1.2rem;
+    opacity: 0.7;
+    margin-bottom: 5px;
+    min-height: 1.5rem;
     word-wrap: break-word;
     word-break: break-all;
 }
 
 .current-operand {
-    color: white;
-    font-size: 36px;
+    font-size: 2.5rem;
     font-weight: 300;
-    min-height: 48px;
+    min-height: 3rem;
+    display: flex;
+    align-items: flex-end;
+    justify-content: flex-end;
     word-wrap: break-word;
     word-break: break-all;
-    line-height: 1.2;
 }
 
-/* Button grid */
 .buttons {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    gap: 12px;
+    gap: 1px;
+    background: #1a252f;
+    padding: 1px;
 }
 
-/* Base button styles */
 .btn {
+    background: var(--number-color);
     border: none;
-    border-radius: 12px;
-    font-size: 20px;
+    color: var(--text-dark);
+    font-size: 1.4rem;
     font-weight: 500;
     cursor: pointer;
-    transition: all 0.15s ease;
-    height: 64px;
+    transition: var(--transition);
+    position: relative;
+    overflow: hidden;
+    min-height: 70px;
     display: flex;
     align-items: center;
     justify-content: center;
+    -webkit-tap-highlight-color: transparent;
     user-select: none;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    position: relative;
-    overflow: hidden;
+    touch-action: manipulation;
 }
 
 .btn::before {
     content: '';
     position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-    transition: left 0.5s;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    transition: width 0.3s, height 0.3s;
 }
 
-.btn:hover::before {
-    left: 100%;
+.btn:active::before {
+    width: 200px;
+    height: 200px;
 }
 
 .btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 .btn:active {
     transform: translateY(0);
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-    transition: all 0.05s ease;
+    transition: var(--transition);
 }
 
-/* Number buttons */
-.btn-number {
-    background: linear-gradient(145deg, #f8f9fa, #e9ecef);
-    color: #343a40;
-    border: 1px solid rgba(0, 0, 0, 0.05);
-}
-
-.btn-number:hover {
-    background: linear-gradient(145deg, #ffffff, #f8f9fa);
-    color: #212529;
-}
-
-.btn-number:active {
-    background: linear-gradient(145deg, #e9ecef, #dee2e6);
-}
-
-/* Operator buttons */
 .btn-operator {
-    background: linear-gradient(145deg, #ff6b35, #f7931e);
-    color: white;
-    font-weight: 600;
+    background: var(--operator-color);
+    color: var(--text-light);
 }
 
-.btn-operator:hover {
-    background: linear-gradient(145deg, #ff7849, #ff6b35);
-    transform: translateY(-2px) scale(1.02);
+.btn-clear {
+    background: var(--accent-color);
+    color: var(--text-light);
 }
 
-.btn-operator:active {
-    background: linear-gradient(145deg, #e55a2b, #de751a);
-}
-
-.btn-operator.active {
-    background: linear-gradient(145deg, #ffffff, #f8f9fa);
-    color: #ff6b35;
-    border: 2px solid #ff6b35;
-}
-
-/* Function buttons (AC, DEL, %) */
-.btn-function {
-    background: linear-gradient(145deg, #6c757d, #5a6268);
-    color: white;
-    font-weight: 600;
-}
-
-.btn-function:hover {
-    background: linear-gradient(145deg, #7c868e, #6c757d);
-}
-
-.btn-function:active {
-    background: linear-gradient(145deg, #5a6268, #4e555b);
-}
-
-/* Equals button */
 .btn-equals {
-    background: linear-gradient(145deg, #28a745, #20c997);
-    color: white;
-    font-weight: 600;
-    font-size: 24px;
+    background: var(--accent-color);
+    color: var(--text-light);
+    font-size: 1.6rem;
 }
 
-.btn-equals:hover {
-    background: linear-gradient(145deg, #34ce57, #28a745);
-    transform: translateY(-2px) scale(1.02);
-}
-
-.btn-equals:active {
-    background: linear-gradient(145deg, #1e7e34, #1c7430);
-}
-
-/* Zero button (spans 2 columns) */
-.btn-zero {
+.span-two {
     grid-column: span 2;
 }
 
-/* Responsive design */
-@media (max-width: 480px) {
-    .calculator {
-        max-width: 280px;
-        padding: 20px;
+/* Mobile First Responsive Design */
+
+/* Small phones (320px - 480px) */
+@media screen and (max-width: 480px) {
+    body {
+        padding: 10px;
     }
     
-    .btn {
-        height: 56px;
-        font-size: 18px;
+    .container {
+        max-width: 100%;
     }
     
-    .current-operand {
-        font-size: 32px;
+    .display {
+        padding: 20px 15px;
+        min-height: 100px;
     }
     
     .previous-operand {
-        font-size: 16px;
-    }
-    
-    .display-screen {
-        padding: 20px 16px;
-        min-height: 100px;
-    }
-}
-
-@media (max-width: 320px) {
-    .calculator {
-        max-width: 260px;
-        padding: 16px;
-    }
-    
-    .buttons {
-        gap: 8px;
-    }
-    
-    .btn {
-        height: 48px;
-        font-size: 16px;
+        font-size: 1rem;
     }
     
     .current-operand {
-        font-size: 28px;
-    }
-}
-
-/* Dark mode support */
-@media (prefers-color-scheme: dark) {
-    .btn-number {
-        background: linear-gradient(145deg, #495057, #343a40);
-        color: #f8f9fa;
-        border: 1px solid rgba(255, 255, 255, 0.1);
+        font-size: 2rem;
+        min-height: 2.5rem;
     }
     
-    .btn-number:hover {
-        background: linear-gradient(145deg, #5a6268, #495057);
-        color: white;
+    .btn {
+        min-height: 60px;
+        font-size: 1.2rem;
     }
     
-    .btn-number:active {
-        background: linear-gradient(145deg, #343a40, #212529);
+    .btn-equals {
+        font-size: 1.4rem;
     }
 }
 
-/* Focus styles for accessibility */
-.btn:focus {
-    outline: none;
-    box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.3);
-}
-
-.btn-equals:focus {
-    box-shadow: 0 0 0 3px rgba(40, 167, 69, 0.3);
-}
-
-.btn-function:focus {
-    box-shadow: 0 0 0 3px rgba(108, 117, 125, 0.3);
-}
-
-/* Animation for button press */
-@keyframes buttonPress {
-    0% {
-        transform: scale(1);
+/* Large phones and small tablets (481px - 768px) */
+@media screen and (min-width: 481px) and (max-width: 768px) {
+    .container {
+        max-width: 380px;
     }
-    50% {
+    
+    .display {
+        padding: 25px 20px;
+        min-height: 110px;
+    }
+    
+    .previous-operand {
+        font-size: 1.1rem;
+    }
+    
+    .current-operand {
+        font-size: 2.2rem;
+        min-height: 2.8rem;
+    }
+    
+    .btn {
+        min-height: 65px;
+        font-size: 1.3rem;
+    }
+    
+    .btn-equals {
+        font-size: 1.5rem;
+    }
+}
+
+/* Tablets (769px - 1024px) */
+@media screen and (min-width: 769px) and (max-width: 1024px) {
+    .container {
+        max-width: 420px;
+    }
+    
+    .display {
+        padding: 35px 30px;
+        min-height: 130px;
+    }
+    
+    .btn {
+        min-height: 75px;
+        font-size: 1.5rem;
+    }
+    
+    .btn-equals {
+        font-size: 1.7rem;
+    }
+}
+
+/* Desktops (1025px and up) */
+@media screen and (min-width: 1025px) {
+    .container {
+        max-width: 400px;
+    }
+    
+    .btn {
+        min-height: 70px;
+    }
+    
+    .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+    }
+}
+
+/* Landscape orientation adjustments */
+@media screen and (orientation: landscape) and (max-height: 600px) {
+    body {
+        padding: 10px;
+    }
+    
+    .display {
+        padding: 15px 20px;
+        min-height: 80px;
+    }
+    
+    .previous-operand {
+        font-size: 0.9rem;
+        margin-bottom: 2px;
+    }
+    
+    .current-operand {
+        font-size: 1.8rem;
+        min-height: 2rem;
+    }
+    
+    .btn {
+        min-height: 50px;
+        font-size: 1.1rem;
+    }
+    
+    .btn-equals {
+        font-size: 1.3rem;
+    }
+}
+
+/* High DPI displays */
+@media screen and (-webkit-min-device-pixel-ratio: 2), screen and (min-resolution: 192dpi) {
+    .btn {
+        border: 0.5px solid rgba(255, 255, 255, 0.1);
+    }
+}
+
+/* Touch device optimizations */
+@media (hover: none) and (pointer: coarse) {
+    .btn {
+        min-height: 65px;
+    }
+    
+    .btn:hover {
+        transform: none;
+        box-shadow: none;
+    }
+    
+    .btn:active {
         transform: scale(0.95);
+        background-color: rgba(255, 255, 255, 0.1);
     }
-    100% {
-        transform: scale(1);
+    
+    .btn-operator:active {
+        background-color: rgba(149, 165, 166, 0.8);
+    }
+    
+    .btn-clear:active,
+    .btn-equals:active {
+        background-color: rgba(231, 76, 60, 0.8);
     }
 }
 
-.btn.pressed {
-    animation: buttonPress 0.1s ease;
+/* Accessibility improvements */
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+    
+    .btn::before {
+        display: none;
+    }
+}
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+    :root {
+        --primary-color: #000000;
+        --secondary-color: #333333;
+        --accent-color: #ff0000;
+        --number-color: #ffffff;
+        --operator-color: #666666;
+        --display-bg: #000000;
+        --text-light: #ffffff;
+        --text-dark: #000000;
+    }
+    
+    .btn {
+        border: 2px solid #000000;
+    }
+}
+
+/* Print styles */
+@media print {
+    body {
+        background: white;
+    }
+    
+    .calculator {
+        box-shadow: none;
+        border: 1px solid #000;
+    }
 }
